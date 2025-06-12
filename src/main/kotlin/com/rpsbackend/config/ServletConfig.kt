@@ -21,7 +21,7 @@ class ServletConfig {
             }
         }
 
-        val registration = ServletRegistrationBean(servlet, "/socket.io/*")
+        val registration = ServletRegistrationBean<HttpServlet>(servlet, "/socket.io/*")
         registration.setName("socketIoServlet")
         return registration
     }

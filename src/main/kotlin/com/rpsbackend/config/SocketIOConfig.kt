@@ -14,8 +14,8 @@ class SocketIOConfig {
     fun engineIoServer(): EngineIoServer {
         val options = EngineIoServerOptions.newFromDefault().apply {
 
-            setCorsHandlingDisabled(false)
-            setAllowedCorsOrigins(setOf("*").toTypedArray()) // Configure CORS as needed
+            isCorsHandlingDisabled = false
+            allowedCorsOrigins = setOf("*").toTypedArray() // Configure CORS as needed
         }
         return EngineIoServer(options)
     }
