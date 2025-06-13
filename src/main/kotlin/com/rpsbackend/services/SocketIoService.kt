@@ -1,6 +1,9 @@
 package com.rpsbackend.services
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.rpsbackend.domain.Action
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.socket.socketio.server.SocketIoServer
 import io.socket.socketio.server.SocketIoSocket
 import jakarta.annotation.PostConstruct
@@ -8,19 +11,19 @@ import kotlinx.coroutines.*
 import org.springframework.stereotype.Service
 
 
+val log = KotlinLogging.logger {}
 @Service
 class SocketIOService(
     private val socketIoServer: SocketIoServer,
     private val roomService: RoomService
 ) {
 
-    private lateinit var socket: SocketIoSocket
-
+    private val objectMapper = jacksonObjectMapper().registerKotlinModule()
     @PostConstruct
     fun initialize() {
         socketIoServer.namespace("/").on("connection") { args ->
-            socket = args[0] as SocketIoSocket
-            println("Client connected: ${socket.id}")
+            val socket = args[0] as SocketIoSocket
+            log.info {  "Client connected: ${socket.id}"}
 
             handleSocketEvents(socket)
         }
@@ -42,9 +45,11 @@ class SocketIOService(
 
         // Handle join room
         socket.on("join_room") {
+            log.info {  "Join ROOM"}
             runBlocking {
                 val match = roomService.newRoomForUser(socket.id)
                 socket.joinRoom(match.name)
+                log.info {  "Joined ROOM ${match.name}"}
                 sendToRoom(match.name, "player_joined", match)
             }
         }
@@ -74,7 +79,7 @@ class SocketIOService(
 
     // Method to send message to specific room
     fun sendToRoom(roomName: String, event: String, data: Any) {
-        socketIoServer.namespace("/").broadcast(roomName, event, data)
+          socketIoServer.namespace("/").broadcast(roomName, event, objectMapper.writeValueAsString(data))
     }
 
     // Method to send message to all clients

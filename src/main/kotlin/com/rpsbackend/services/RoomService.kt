@@ -17,11 +17,6 @@ class RoomService {
     var waitingRoom: Match? = null
     val mutex = Mutex()
 
-    private val objectMapper = jacksonObjectMapper().registerKotlinModule()
-
-
-
-
      suspend fun newRoomForUser(userId: String): Match {
         mutex.withLock {
             var match = waitingRoom

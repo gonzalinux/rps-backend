@@ -11,8 +11,8 @@ data class Match(
     val rounds: MutableList<Round> = mutableListOf(),
 
     ) {
-    val startDate: Instant = Instant.now()
-    val endDate: Instant? = null
+    //val startDate: Instant = Instant.now()
+    //val endDate: Instant? = null
     val name = UUID.randomUUID().toString()
 
     fun addSecondPlayer(userId: String) {
